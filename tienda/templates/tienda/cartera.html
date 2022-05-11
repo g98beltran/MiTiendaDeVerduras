@@ -1,0 +1,58 @@
+<!--El carrito se mostrara al selecionarse y tendremos el resumen del pedido-->
+<!--Podremos modificar las cantidades y volver a comprar más o ir a pagar-->
+{% extends 'tienda/base.html' %}
+{% load static %}
+{% block content %}
+
+	<div class="row">
+		<div class="col-lg-12">
+			<div class="box-element">
+
+				<a  class="btn btn-outline-dark" href="{% url 'tienda' %}">&#x2190; Continuar Comprando</a>
+
+				<br>
+				<br>
+				<strong id="veri"><p>Verifica tu pedido</p></strong>
+				<table class="table">
+					<tr>
+						<th><h5>Elementos: <strong>{{order.get_cart_items}}</strong></h5></th>
+					</tr>
+					<tr>
+						<th><h5>Total:<strong> {{order.get_cart_total|floatformat:2}}€</strong></h5></th>
+					</tr>
+				</table>
+
+			</div>
+
+			<br>
+			<div class="box-element" id="fleXraro">
+				<div class="cart-row" id="base">
+					<!--<div style="flex:2"></div>-->
+					<div style="padding-right: 20px;"><strong>Producto</strong></div>
+					<!--<div style="flex:1"><strong>Precio</strong></div>-->
+					<div style="padding-right: 20px;"><strong>Cantidad</strong></div>
+					<div ><strong>Total</strong></div>
+				</div>
+				{% for item in items %}
+				<div class="cart-row" id="contenido">
+					<div style="padding-right: 30px;"><img class="row-image" src="{{item.product.imageURL}}"></div>
+					<!--<div style="flex:2"><p>{{item.product.name}}</p></div>-->
+					<!--<div style="flex:1"><p>{{item.product.price|floatformat:2}}€</p></div>-->
+					<div style="padding-right: 20px; margin-top: 10px;">
+						<p class="quantity">{{item.quantity}}</p>
+						<div class="quantity">
+							<img data-product="{{item.product.id}}" data-action="add" class="chg-quantity update-cart" src="{% static  'img/arriba.png' %}">
+					
+							<img data-product="{{item.product.id}}" data-action="remove" class="chg-quantity update-cart" src="{% static  'img/abajo.png' %}">
+						</div>
+					</div>
+					<div style="margin-top: 10px;"><p>{{item.get_total|floatformat:2}}€</p></div>
+				</div>
+				{% endfor %}
+			</div>
+			<a  style="display: flex;justify-content: center;" href="{% url 'verificar' %}">
+				<img src="{% static 'img/verificar.png' %}" alt="" width="100" height="100">
+			</a>
+		</div>
+	</div>
+{% endblock content %}
