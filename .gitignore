@@ -1,8 +1,0 @@
-.env
-db_sqlite3
-*.pyc
-*~
-__pycache__
-paquito
-/static
-.DS_Store
