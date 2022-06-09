@@ -58,6 +58,15 @@ class Order(models.Model):
 		total = sum([item.quantity for item in orderitems])
 		return total 
 	
+	@property
+	def get_elementos(self):
+		orderitems = self.orderitem_set.all()
+		elementos = "\n"
+		for item in orderitems:
+			elementos += "-> " +str(item.product.name) + " X"+str(item.quantity)+"	Precio unidad "+str(item.product.price)+"€ \n"	
+		elementos += "\n"
+		return elementos 
+	
 
 
 class OrderItem(models.Model):
@@ -79,6 +88,10 @@ class ShippingAddress(models.Model):
 	state = models.CharField(max_length=200, null=False)
 	zipcode = models.CharField(max_length=200, null=False)
 	date_added = models.DateTimeField(auto_now_add=True)
+
+	def get_Direccion(self):
+		dir = 'Dirección -> '+self.address+'\nCiudad -> '+self.city+'\nPaís -> '+self.state+'\nCódigo Postal -> '+self.zipcode
+		return dir
 
 	def __str__(self):
 		return self.address

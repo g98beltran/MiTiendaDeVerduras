@@ -26,9 +26,9 @@ SECRET_KEY = config('SECRET_KEY')
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config('DEBUG')
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['127.0.0.1']
 
 
 # Application definition
@@ -109,7 +109,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'es-es'
 
 TIME_ZONE = 'UTC'
 
@@ -129,17 +129,24 @@ STATIC_URL = '/static/'
 STATICFILES_DIRS = [
     BASE_DIR / 'static',
 ]
+
+#Todo lo necesario para enviar correos
+
+EMAIL_BACKEND='django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST=config('EMAIL_HOST')
+EMAIL_HOST_USER=config('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD=config('EMAIL_HOST_PASSWORD')
+EMAIL_PORT=config('EMAIL_PORT')
+EMAIL_USE_TLS= config('EMAIL_USE_TLS')
+
 """
-if not DEBUG:
+
     EMAIL_BACKEND='django.core.mail.backends.smtp. EmailBackend'
-    EMAIL_HOST=env('EMAIL_HOST')
-    EMAIL_HOST_USER=env('EMAIL_HOST_USER')
-    EMAIL_HOST_PASSWORD=env('EMAIL_HOST_PASSWORD')
-                  env('EMAIL_PORT')
-                    env('EMAIL USE_TLS')
-                     %3!
-    EMAIL_PORT=
-    EMAIL_USE_TLS
+    EMAIL_HOST=config('EMAIL_HOST')
+    EMAIL_HOST_USER=config('EMAIL_HOST_USER')
+    EMAIL_HOST_PASSWORD=config('EMAIL_HOST_PASSWORD')
+    EMAIL_PORT=config('EMAIL_PORT')
+    EMAIL_USE_TLS= config('EMAIL USE_TLS')
     SESSION_COOKIE_SECURE=True
     SECURE_BROWSER_XSS_FILTER=True
     SECURE_CONTENT_TYPE_NOSNIFF=True
@@ -160,3 +167,14 @@ MEDIA_ROOT = BASE_DIR /'static/img'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+SESSION_COOKIE_SECURE=True
+SECURE_BROWSER_XSS_FILTER=True
+SECURE_CONTENT_TYPE_NOSNIFF=True
+SECURE_HSTS_INCLUDE_SUBDOMAINS=True
+SECURE_HSTS_SECONDS=31536000
+#SECURE_REDIRECT EXEMPT=[]
+SECURE_SSL_REDIRECT=True
+SECURE_PROXY_SSL_HEADER=('HTTP X_FORWARDED_PROTO', 'https')
+SECURE_HSTS_PRELOAD = True
+CSRF_COOKIE_SECURE = True

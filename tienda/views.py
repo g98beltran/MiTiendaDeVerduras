@@ -11,6 +11,8 @@ import datetime
 from .models import * 
 from .utils import cookieCart, cartData, guestOrder
 from .forms import CrearUsuarioForm
+from django.conf import settings
+from django.core.mail import send_mail
 
 def autentificarse(request):
 	if request.method == 'POST' :
@@ -29,7 +31,7 @@ def desconectarse(request):
 	logout(request)
 	return redirect('autentificarse')
 
-@csrf_exempt
+@csrf_protect
 def registrarse(request):
 	form=CrearUsuarioForm()
 	
@@ -102,7 +104,7 @@ def updateItem(request):
 
 	return JsonResponse('Item was added', safe=False)
 
-@csrf_exempt
+@csrf_protect
 def processOrder(request):
 	transaction_id = datetime.datetime.now().timestamp()
 	data = json.loads(request.body)
@@ -110,18 +112,20 @@ def processOrder(request):
 	if request.user.is_authenticated:
 		customer = request.user.customer
 		order, created = Order.objects.get_or_create(customer=customer, complete=False)
+		email = customer.email
 	else:
 		customer, order = guestOrder(request, data)
-
-	total = float(data['form']['total'])
+		email = customer.email
+	aux = data['form']['total']
+	aux=aux.replace(",",".")
+	total = float(aux)
 	order.transaction_id = transaction_id
 
 	if total == order.get_cart_total:
 		order.complete = True
 	order.save()
-
 	if order.shipping == True:
-		ShippingAddress.objects.create(
+		envio =ShippingAddress.objects.create(
 		customer=customer,
 		order=order,
 		address=data['shipping']['address'],
@@ -129,7 +133,24 @@ def processOrder(request):
 		state=data['shipping']['state'],
 		zipcode=data['shipping']['zipcode'],
 		)
+	else:
+		envio = "No hay Envio se trata de un producto digital"
 
-
+	direccion = 'Dirección -> '+str(data['shipping']['address'])+'\nCiudad -> '+str(data['shipping']['city'])+'\nPaís -> '+str(data['shipping']['state'])+'\nCódigo Postal -> '+str(data['shipping']['zipcode'])
+	mensaje = "Hola, "+ customer.name +".\nHa realizado usted un pedido en MiTiendadeVerduras.com \n\n"
+	mensaje += "Productos:"+str(order.get_elementos)
+	mensaje += "La dirección introducida es: \n"+direccion+ "\n\n"
+	mensaje += "Revisaremos si el pedido está pagado y le enviaremos el paquete.\n\n"
+	mensaje += "Muchas gracias por comprar en nuestra tienda.\n\n\n\n\n"
 	
+	para = [settings.EMAIL_HOST_USER,email]
+
+	send_mail(
+		'Pedido MiTiendaDeVerduras',
+		mensaje,
+		settings.EMAIL_HOST_USER,
+		para
+	)
+	# send_mail('hola','Correo enviado desde Django','xxxxx@gmail.com',a)
 	return JsonResponse('Payment submitted..', safe=False)
+
